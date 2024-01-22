@@ -1,0 +1,14 @@
+Business_close_topic Introduction
+
+For the topic of the tourism problem, we analyze it based on Python software.
+In this part, we try to use the model to analyze the short-term tourist data arriving in
+the NSW region from 1991 to the present, train the model and use the fitted model to
+predict the number of tourists coming into the NSW region in the future and give the
+government a benchmark in the future to help the government analyze the current
+situation recovery of the tourism industry. Before model fitting, we performed an
+autocorrelation analysis on our time series data to confirm the most suitable training
+step size. Then we used the LSTM-Transformer and Encoder-Decoder-Transformer
+models to model and analyze this problem. The data in the training set is from 1991
+to before the covid-19. This period of data includes data from the SARS period,
+which can help the model understand the impact of the epidemic to a certain extent
+and more accurately predict the number of tourists in the future

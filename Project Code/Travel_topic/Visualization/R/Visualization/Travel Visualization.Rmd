@@ -1,0 +1,208 @@
+---
+title: "travel"
+author: "Xunying Hu"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(readxl)
+library(reshape2)
+```
+
+
+```{r}
+au.arr <- read.csv("Data/Short-term visitor arrivals(AU).csv")
+nsw.arr <- read.csv("Data/Short-term visitor arrivals(NSW).csv")
+pred.arr <- read.csv("Data/test_pred1.csv")
+jp.arr <- read.csv("Data/jp_arrivals.csv")
+```
+
+```{r}
+au.arr <- au.arr %>% 
+  rename(Arrivals = Short.term.visitor.arrivals..Aust....000.)
+
+au.arr$Arrivals <- gsub(",", "", au.arr$Arrivals)
+au.arr$Arrivals <- as.numeric(au.arr$Arrivals)
+
+au.arr <- au.arr %>% mutate(Date = as.Date(Date, format="%d/%m/%Y"))
+```
+
+```{r}
+nsw.arr <- nsw.arr %>% 
+  rename(Arrivals = Short.term.visitor.arrivals..NSW...000.)
+
+nsw.arr$Arrivals <- gsub(",", "", nsw.arr$Arrivals)
+nsw.arr$Arrivals <- as.numeric(nsw.arr$Arrivals)
+
+nsw.arr <- nsw.arr %>% mutate(Date = as.Date(Date, format="%d/%m/%Y"))
+```
+
+```{r}
+nsw.arr.2022 <- subset(nsw.arr, format(Date, "%Y") == "2019")
+```
+
+
+```{r}
+pred.arr <- pred.arr %>% mutate(Date = as.Date(Date, format="%d/%m/%Y"),
+                                Arrivals = Arrivals/1000)
+```
+
+
+```{r}
+jp.arr$Arrivals <- gsub(",", "", jp.arr$Arrivals)
+jp.arr$Arrivals <- as.numeric(jp.arr$Arrivals)
+
+jp.arr <- jp.arr %>% mutate(Date = as.Date(Date, format="%d/%m/%Y"))
+```
+
+```{r}
+ggplot() +
+  geom_line(aes(x = Date, y = Arrivals, group=1, color = "Arrivals(JP)"), data = jp.arr %>% filter(Date >= as.Date("2019-09-01")) %>% mutate(Arrivals = round(Arrivals/1000000,2))
+            , color = "blue", size =1) +
+  scale_x_date(date_breaks = "3 month", date_labels = "%b %Y") +
+  theme(panel.background = element_rect(fill = "white"),
+        plot.background = element_rect(fill = "white"),
+        legend.position = c(0.9, 0.85),
+        panel.grid.major.x = element_line(color = "gray", linetype = "dashed"),
+        panel.grid.minor.x = element_blank()) +
+  labs(title = "Tourist arrivals in Japan before and after Covid-19", x = "Month", y = "Arrivals(m)",
+       color = NULL) +
+  theme(panel.background = element_rect(fill = "white"),
+        plot.background = element_rect(fill = "white"),
+        legend.position = c(0.9, 0.85),
+        panel.grid.major.x = element_line(color = "gray", linetype = "dashed"),
+        panel.grid.minor.x = element_blank(),
+        plot.title = element_text(size = 20),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 18)) +
+  annotate("segment", x = as.Date("2020-01-01"), xend = as.Date("2020-01-01"), 
+           y = 0, yend = 2.8, linetype = "dashed", color = "red") +
+  annotate("segment", x = as.Date("2022-09-01"), xend = as.Date("2022-09-01"), 
+           y = 0, yend = 0.22, linetype = "dashed", color = "red") +
+  annotate("segment", x = as.Date("2022-10-01"), xend = as.Date("2022-10-01"), 
+           y = 0, yend = 0.6, linetype = "dashed", color = "red") +
+  annotate("segment", x = as.Date("2023-01-01"), xend = as.Date("2023-01-01"), 
+           y = 0, yend = 1.6, linetype = "dashed", color = "red")
+  
+```
+
+
+```{r}
+ggplot() +
+  geom_line(aes(x = Date, y = Arrivals, group=1, color = "Arrivals(AU)"), data = au.arr, size=1) +
+  geom_line(aes(x = Date, y = Arrivals, group=1, color = "Arrivals(NSW)"), data = nsw.arr, size=1) +
+  scale_color_manual(values = c(
+    "Arrivals(AU)" = "blue", 
+    "Arrivals(NSW)" = "orange")) +
+  scale_x_date(date_breaks = "12 month", date_labels = "%b %Y") +
+  theme(panel.background = element_rect(fill = "white"),
+        plot.background = element_rect(fill = "white"),
+        legend.position = c(0.9, 0.85),
+        panel.grid.major.x = element_line(color = "gray", linetype = "dashed"),
+        panel.grid.minor.x = element_blank(),
+        plot.title = element_text(size = 20),
+        axis.text = element_text(size = 12)) +
+  theme_minimal(
+    base_size=18
+    )+
+  labs(title = "The changes of monthly short-term visitor arrivals in Australia and NSW", x = "Month", y = "Arrivals(000)",
+       color = NULL) +
+  annotate("segment", x = as.Date("2018-12-01"), xend = as.Date("2018-12-01"), 
+           y = 0, yend = 1200, linetype = "dashed", color = "red", size=1) +
+  geom_text(aes(x = as.Date("2018-12-01"), y = 1250, label="Christmas peak"),
+            size = 4, color = "red", fontface = "bold") +
+  annotate("segment", x = as.Date("2020-03-01"), xend = as.Date("2020-03-01"), 
+           y = 0, yend = 400, linetype = "dashed", color = "red", size =1) +
+  geom_text(aes(x = as.Date("2020-03-01"), y = 450, 
+                label="Border closed"),
+            size=4, color = "red", fontface = "bold") +
+  geom_text(aes(x = as.Date("2020-03-01"), y = 420, 
+                label="20 March"),
+            size=4, color = "red") +
+  annotate("segment", x = as.Date("2021-11-01"), xend = as.Date("2021-11-01"), 
+           y = 0, yend = 700, linetype = "dashed", color = "red", size =1) +
+  geom_text(aes(x = as.Date("2021-11-01"), y = 750, 
+                label="Internatonal borders reopened"),
+            size=4, color = "red", fontface = "bold") +
+  geom_text(aes(x = as.Date("2021-11-01"), y = 720, 
+                label="1 November"),
+            size=4, color = "red") 
+  
+```
+
+```{r}
+consumption.gdp <- read_excel("Data/consumption.xlsx", sheet = "Direct tourism GDP ($m)")
+consumption.output1 <-read_excel("Data/consumption.xlsx", sheet = "output")
+consumption.output2 <-read_excel("Data/consumption.xlsx", sheet = "output2")
+```
+
+```{r}
+ggplot() +
+  geom_line(aes(x = Year, y = Domestic, group=1, color = "Domestic"), data = consumption.gdp, size=1, linetype="dashed") +
+  geom_line(aes(x = Year, y=International, group=1, color = "International"), data =consumption.gdp,size=1, linetype="dashed") +
+  geom_line(aes(x = Year, y = Total, group=1, color = "Total"), data = consumption.gdp, size=1.2) +
+  scale_color_manual(values = c("Total" = "red", "Domestic" = "blue", "International" = "orange")) +
+  #scale_x_discrete(breaks = consumption.gdp$Year[seq(1, length(consumption.gdp$Year), 2)]) +
+  theme(panel.background = element_rect(fill = "white"),
+        plot.background = element_rect(fill = "white"),
+        panel.grid.major.x = element_line(color = "gray", linetype = "dashed"),
+        panel.grid.minor.x = element_blank(),
+        axis.text = element_text(size = 12),
+        plot.title = element_text(size = 25),
+        legend.position = "top",
+        legend.justification = "right",
+        legend.text = element_text(size = 18),
+        axis.title.x = element_text(size = 18),
+        axis.title.y = element_text(size = 18)) +
+  #theme_minimal(base_size=18) +
+  labs(title = "The changes of direct tourism GDP in Australia", x = "Year", y = "GDP ($m)",
+       color = NULL)
+```
+
+
+```{r}
+output_long1 <- melt(consumption.output1, id = "Year")
+output_long2 <- melt(consumption.output2, id = "Year")
+```
+
+```{r}
+ggplot(data = output_long1, aes(x=Year, y=value, group=variable, color=variable, shape=variable))+
+  geom_line() +
+  theme(panel.background = element_rect(fill = "white"),
+        plot.background = element_rect(fill = "white"),
+        panel.grid.major.x = element_line(color = "gray", linetype = "dashed"),
+        panel.grid.minor.x = element_blank(),
+        plot.title = element_text(size = 25),
+        legend.text = element_text(size = 10),
+        axis.title.x = element_text(size = 18),
+        axis.title.y = element_text(size = 18)) +
+  labs(title = "The changes of tourism characteristic industries output in Australia ", x = "Year", y = "Tourism output ($m)", color = NULL)
+```
+
+```{r}
+ggplot() +
+  geom_line(aes(x = Date, y = Arrivals, group=1, color = "Actual Arrivals"), data = nsw.arr, size=0.8, alpha = 0.6) +
+  geom_line(aes(x = Date, y = Arrivals, group=1, color = "Predicted Arrivals"), data = pred.arr, size=0.8, alpha = 0.7) +
+  scale_color_manual(values = c("Actual Arrivals" = "blue", "Predicted Arrivals" = "orange")) +
+  scale_x_date(date_breaks = "12 month", date_labels = "%b %Y") +
+  theme(panel.background = element_rect(fill = "white"),
+        plot.background = element_rect(fill = "white"),
+        legend.position = c(0.9, 0.95),
+        panel.grid.major.x = element_line(color = "gray", linetype = "dashed"),
+        panel.grid.minor.x = element_blank(),
+        plot.title = element_text(size = 20),
+        axis.text = element_text(size = 8),
+        axis.title = element_text(size = 12),
+        legend.text = element_text(size = 12)
+        ) +
+  labs(title = "The comparison of actual and predicted arrivals in NSW", x = "Month", y = "Arrivals(000)", color = NULL) +
+  geom_hline(yintercept = mean(nsw.arr.2022$Arrivals), linetype = "dashed", color = "red")
+```
+

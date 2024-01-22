@@ -1,0 +1,23 @@
+Introduction
+For tourism, we divide the code into two parts, the model part, and the visualization part.
+
+Dataset
+LSTM&Attention Model Folder
+1. "0421_travel.xlsx": This xlsx file contains monthly data for short-term visitors arriving in the NSW region from January 1991 to February 2023
+2. "LSTM_Baseline.py": This py file is the model analysis of the sequence data above using the LSTM-transformer model as the baseline of our project.
+3. "main_attention.py": This py file is the model analysis of the sequence data above using the Attention-transformer model as an improved method for our project.
+4. "test.py": This py file is the test results of the data from 2015 to 2019 using the LSTM-transformer model and the Attention-transformer model.
+5. "ConvTransformer_nologsparse.pth" saves the parameters we use for the Attention-transformer model.
+
+Visualization Folder
+python sub-Folder
+1. "0421_travel.xlsx": This xlsx file contains monthly data for short-term visitors arriving in the NSW region from January 1991 to February 2023
+2. "Autocorrelation&test visualization.ipynb": This ipynb file contains the autocorrelation visualization of the data and the visualization of the test part of the two models
+3. "baseline_test.xlsx": This xlsx file contains the prediction results of the LSTM-transformer model for 2015-2019
+4. "transformer_test.xlsx": This xlsx file contains the prediction results of the Attention-transformer model for 2015-2019.
+R sub-Folder
+1. "Travel Visualization.Rmd": This Rmd file contains our visual forecast results and other related pictures for the number of tourists arriving in the NSW region in the next ten years
+
+
+Instructions for Opening the File
+1. Open "LSTM_Baseline.py," "main_attention.py," "test.py," "Autocorrelation&test visualization.ipynb", "Travel Visualization.Rmd" and run them to output the results of the model
